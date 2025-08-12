@@ -6,6 +6,7 @@ import { InMemoryNotificationsRepository } from "@/tests/repositories/in-memory-
 import { InMemoryQuestionAttachmentsRepository } from "@/tests/repositories/in-memory-question-attachments-repository";
 import { InMemoryQuestionsRepository } from "@/tests/repositories/in-memory-questions-repository";
 import { waitFor } from "@/tests/utils/wait-for";
+import { MockInstance } from "vitest";
 import {
   SendNotificationService,
   SendNotificationServiceRequest,
@@ -20,9 +21,10 @@ let inMemoryAnswersRepository: InMemoryAnswersRepository;
 let inMemoryNotificationsRepository: InMemoryNotificationsRepository;
 let sendNotificationService: SendNotificationService;
 
-let sendNotificationExecuteSpy: SpyInstance<
-  [SendNotificationServiceRequest],
-  Promise<SendNotificationServiceResponse>
+let sendNotificationExecuteSpy: MockInstance<
+  (
+    request: SendNotificationServiceRequest
+  ) => Promise<SendNotificationServiceResponse>
 >;
 
 describe("On Question Best Answer Chosen", () => {
