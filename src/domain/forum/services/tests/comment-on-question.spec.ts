@@ -1,0 +1,43 @@
+import { makeQuestion } from "@/tests/factories/make-question";
+import { InMemoryQuestionAttachmentsRepository } from "@/tests/repositories/in-memory-question-attachments-repository";
+import { InMemoryQuestionCommentsRepository } from "@/tests/repositories/in-memory-question-comments-repository";
+import { InMemoryQuestionsRepository } from "@/tests/repositories/in-memory-questions-repository";
+import { CommentOnQuestionService } from "../comment-on-question.service";
+
+let inMemoryQuestionsRepository: InMemoryQuestionsRepository;
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository;
+let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository;
+let sut: CommentOnQuestionService;
+
+describe("Comment on Question", () => {
+  beforeEach(() => {
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository();
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionAttachmentsRepository
+    );
+    inMemoryQuestionCommentsRepository =
+      new InMemoryQuestionCommentsRepository();
+
+    sut = new CommentOnQuestionService(
+      inMemoryQuestionsRepository,
+      inMemoryQuestionCommentsRepository
+    );
+  });
+
+  it("should be able to comment on question", async () => {
+    const question = makeQuestion();
+
+    await inMemoryQuestionsRepository.create(question);
+
+    await sut.execute({
+      questionId: question.id.toString(),
+      authorId: question.authorId.toString(),
+      content: "Comentário teste",
+    });
+
+    expect(inMemoryQuestionCommentsRepository.items[0]?.content).toEqual(
+      "Comentário teste"
+    );
+  });
+});
